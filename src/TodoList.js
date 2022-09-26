@@ -3,7 +3,6 @@ import './App.css';
 
 const TodoList = () => {
     
-    console.log("-start----------------------------------------")
     const [todo, setTodo] = useState({description: '', date: ''});
     const [todos, setTodos] = useState([]);
 
@@ -36,6 +35,7 @@ const TodoList = () => {
                         <tr key={index}>
                             <td>{todo.date}</td>
                             <td>{todo.description}</td>
+                            <td><button onClick={() => setTodos(todos.filter((todo, i) => i !== index))}>remove</button></td>
                         </tr>
                     )}
                 </tbody>
