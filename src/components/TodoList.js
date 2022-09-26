@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import './App.css';
+import './../App.css';
+import Todotable from './Todotable';
 
 const TodoList = () => {
     
@@ -15,6 +16,10 @@ const TodoList = () => {
         setTodo({...todo, [event.target.name]: event.target.value});
     }
 
+    const removeTable = (index) => {
+        setTodos(todos.filter((todo, i) => i !== index))
+    }
+
     return(
         <div>
             <h1>Simple Todolist</h1>
@@ -22,24 +27,7 @@ const TodoList = () => {
             Description: <input type="text" name="description" onChange={inputChanged} value={todo.description} />
             Date: <input type="text" name="date" onChange={inputChanged} value={todo.date} />
             <button onClick={addTodo}>Add</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {todos.map((todo,index) => 
-                        <tr key={index}>
-                            <td>{todo.date}</td>
-                            <td>{todo.description}</td>
-                            <td><button onClick={() => setTodos(todos.filter((todo, i) => i !== index))}>remove</button></td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+            <Todotable todos={todos} removeTable={(index) => removeTable(index)} />
         </div>
     );
 };
