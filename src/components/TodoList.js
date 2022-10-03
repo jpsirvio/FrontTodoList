@@ -1,35 +1,59 @@
-import React, {useState} from 'react';
-import './../App.css';
-import Todotable from './Todotable';
+import React, { useState, useRef } from 'react';
+import { AgGridReact } from'ag-grid-react'
+import'ag-grid-community/dist/styles/ag-grid.css'
+import'ag-grid-community/dist/styles/ag-theme-material.css';
 
-const TodoList = () => {
-    
-    const [todo, setTodo] = useState({description: '', date: ''});
-    const [todos, setTodos] = useState([]);
+function Todolist() {
+  const [todo, setTodo] = useState({description: '', date: '', priority:''});
+  const [todos, setTodos] = useState([]);
+  const gridRef = useRef();
+  const columns = [  
+    { field: "description" , sortable: true, filter: true, floatingFilter: true },  
+    { field: "date" , sortable: true, filter: true, floatingFilter: true },  
+    { field: "priority" , sortable: true, filter: true, floatingFilter: true, cellStyle: params => params.value === "High" ? {color: 'red'} : {color: 'black'} }];
 
-    const addTodo = (event) => {   
-        event.preventDefault();
-        setTodos([...todos, todo]);
-    }
 
-    const inputChanged = (event) => {  
-        setTodo({...todo, [event.target.name]: event.target.value});
-    }
+  const inputChanged = (event) => {
+    setTodo({...todo, [event.target.name]: event.target.value});
+  }
 
-    const removeTable = (index) => {
-        setTodos(todos.filter((todo, i) => i !== index))
-    }
+  const addTodo = (event) => {
+    setTodos([...todos, todo]);
+  }
 
-    return(
-        <div>
-            <h1>Simple Todolist</h1>
-            <p>Add todo</p>
-            Description: <input type="text" name="description" onChange={inputChanged} value={todo.description} />
-            Date: <input type="text" name="date" onChange={inputChanged} value={todo.date} />
+  const deleteTodo = () => {
+    if(gridRef.current.getSelectedNodes().length > 0) {
+        setTodos(todos.filter((todo, index) =>      
+            index !== gridRef.current.getSelectedNodes()[0].childIndex))
+        }
+        else {
+            alert('Select row first');
+        }
+  };
+
+  return (
+    <div>
+        <div style={{height: '70%', width: '600px', margin: 'auto' }}>
+        <h1>TodoList</h1>
+            <input type="text" onChange={inputChanged} placeholder="Description" name="description" value={todo.description}/>
+            <input type="text" onChange={inputChanged} placeholder="Date" name="date" value={todo.date}/>
+            <input type="text" onChange={inputChanged} placeholder="Priority" name="priority" value={todo.priority}/>
             <button onClick={addTodo}>Add</button>
-            <Todotable todos={todos} removeTable={(index) => removeTable(index)} />
+            <button onClick={deleteTodo}>Delete</button>
         </div>
-    );
+        <div className="ag-theme-material" style={{height: '700px', width: '600px', margin: 'auto'}} >
+            <AgGridReact
+                ref={gridRef}
+                onGridReady={ params => gridRef.current = params.api }
+                rowSelection="single"
+                columnDefs={columns}
+                rowData={todos}
+                animateRows={true}
+                >
+            </AgGridReact> 
+        </div>
+    </div>
+  );
 };
 
-export default TodoList;
+export default Todolist;
